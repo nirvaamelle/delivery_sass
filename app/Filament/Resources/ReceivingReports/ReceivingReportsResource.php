@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ReceivingReports;
 
 use App\Filament\Concerns\AuthorizesScreenByRole;
+use App\Filament\Concerns\RetiredModule;
 use App\Filament\Resources\ReceivingReports\Pages\ListReceivingReports;
 use App\Filament\Resources\ReceivingReports\Tables\ReceivingReportsTable;
 use App\Models\ReceivingReport;
@@ -23,6 +24,7 @@ use UnitEnum;
 class ReceivingReportsResource extends Resource
 {
     use AuthorizesScreenByRole;
+    use RetiredModule;
 
     protected static ?string $model = ReceivingReport::class;
 

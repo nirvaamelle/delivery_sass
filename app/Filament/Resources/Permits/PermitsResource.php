@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Permits;
 
 use App\Filament\Concerns\AuthorizesScreenByRole;
+use App\Filament\Concerns\RetiredModule;
 use App\Filament\Resources\Permits\Pages\ListPermits;
 use App\Filament\Resources\Permits\Tables\PermitsTable;
 use App\Models\Permit;
@@ -23,6 +24,7 @@ use UnitEnum;
 class PermitsResource extends Resource
 {
     use AuthorizesScreenByRole;
+    use RetiredModule;
 
     protected static ?string $model = Permit::class;
 

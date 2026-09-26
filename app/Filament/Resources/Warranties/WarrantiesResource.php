@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Warranties;
 
 use App\Filament\Concerns\AuthorizesScreenByRole;
+use App\Filament\Concerns\RetiredModule;
 use App\Filament\Resources\Warranties\Pages\ListWarranties;
 use App\Filament\Resources\Warranties\Tables\WarrantiesTable;
 use App\Models\Warranty;
@@ -21,6 +22,7 @@ use UnitEnum;
 class WarrantiesResource extends Resource
 {
     use AuthorizesScreenByRole;
+    use RetiredModule;
 
     protected static ?string $model = Warranty::class;
 

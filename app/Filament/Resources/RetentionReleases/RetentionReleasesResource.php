@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\RetentionReleases;
 
 use App\Filament\Concerns\AuthorizesScreenByRole;
+use App\Filament\Concerns\RetiredModule;
 use App\Filament\Resources\RetentionReleases\Pages\ListRetentionReleases;
 use App\Filament\Resources\RetentionReleases\Tables\RetentionReleasesTable;
 use App\Models\RetentionRelease;
@@ -22,6 +23,7 @@ use UnitEnum;
 class RetentionReleasesResource extends Resource
 {
     use AuthorizesScreenByRole;
+    use RetiredModule;
 
     protected static ?string $model = RetentionRelease::class;
 

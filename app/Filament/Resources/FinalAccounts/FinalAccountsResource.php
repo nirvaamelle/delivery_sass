@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\FinalAccounts;
 
 use App\Filament\Concerns\AuthorizesScreenByRole;
+use App\Filament\Concerns\RetiredModule;
 use App\Filament\Resources\FinalAccounts\Pages\ListFinalAccounts;
 use App\Filament\Resources\FinalAccounts\Tables\FinalAccountsTable;
 use App\Models\FinalAccount;
@@ -22,6 +23,7 @@ use UnitEnum;
 class FinalAccountsResource extends Resource
 {
     use AuthorizesScreenByRole;
+    use RetiredModule;
 
     protected static ?string $model = FinalAccount::class;
 
