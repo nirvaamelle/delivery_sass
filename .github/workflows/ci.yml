@@ -1,0 +1,105 @@
+name: CI
+
+# The build loop's Step 3 check list, run on a machine nobody has configured by
+# hand. BUILD-STATE.md records what passed locally; this records what passes
+# anywhere — which is the difference between "works on my Laragon" and "works".
+#
+# tests/Feature/Foundation/DeployPipelineTest.php asserts that this file still
+# runs every one of those checks. If a check is removed here, that test fails,
+# because CI quietly checking less than the loop does is the failure mode that
+# never announces itself.
+
+on:
+  push:
+    branches: [main, staging, 'build/**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    services:
+      # MySQL, not SQLite. PLAN.md §2 picks MySQL for SELECT … FOR UPDATE on
+      # gapless numbering, and the ledger's append-only guarantee is a pair of
+      # MySQL triggers. A suite green on SQLite would prove neither.
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: construction_test
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          # Pinned to the version Laragon runs locally. PLAN.md §9 lists PHP
+          # version drift as a risk whose mitigation is that local matches
+          # production; CI is the third environment that has to agree.
+          php-version: '8.3'
+          # bcmath is not optional here — it is what keeps DECIMAL(18,4) money
+          # arithmetic exact in the withholding and posting services.
+          extensions: bcmath, gd, intl, mbstring, openssl, pdo_mysql, zip
+          coverage: none
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Audit dependencies
+        # PLAN.md §3 security baseline names this explicitly. It runs before the
+        # tests so a known-vulnerable dependency fails fast and visibly.
+        run: composer audit --no-dev
+
+      - name: Prepare the environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Migrate
+        run: php artisan migrate --force
+        env:
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: construction_test
+          DB_USERNAME: root
+          DB_PASSWORD: ''
+
+      - name: Tests
+        run: php artisan test
+
+      - name: Code style
+        run: ./vendor/bin/pint --test
+
+      - name: Static analysis
+        run: ./vendor/bin/phpstan analyse --no-progress
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Browser console gate
+        # Zero console errors AND zero warnings, on every Filament screen the
+        # build has shipped. A 404 asset counts. A Livewire warning counts.
+        run: npm run test:console
+        env:
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: construction_test
+          DB_USERNAME: root
+          DB_PASSWORD: ''
+
+      - name: Keep the failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7

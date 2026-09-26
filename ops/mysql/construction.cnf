@@ -1,0 +1,86 @@
+# MySQL 8.4 — P6-07.
+#
+# Install as /etc/mysql/mysql.conf.d/construction.cnf, then `systemctl restart
+# mysql` and `mysql -e "SELECT @@bind_address, @@mysqlx_bind_address,
+# @@log_bin_trust_function_creators, @@sql_mode"` to confirm each one took.
+#
+# Sized for the Part D item 12 box — Hetzner CX22, 4 GB — shared with PHP-FPM
+# (~720 MB at 12 workers) and Redis. PLACEHOLDER: resize with real numbers.
+
+[mysqld]
+
+# ---------------------------------------------------------------------------
+# Network: localhost only, on BOTH protocols.
+# ---------------------------------------------------------------------------
+
+# The application and the database share a box. Nothing outside it should be
+# able to open a connection at all.
+bind-address = 127.0.0.1
+
+# bind-address does NOT cover the X Protocol. On MySQL 8.4 mysqlx_bind_address
+# defaults to `*` — every interface, port 33060 — so without this line the
+# classic port is locked down while the X Protocol port listens to the internet.
+# Verified against the local 8.4.3 server, not assumed.
+mysqlx-bind-address = 127.0.0.1
+
+skip-name-resolve
+
+# ---------------------------------------------------------------------------
+# The ledger's triggers.
+# ---------------------------------------------------------------------------
+
+# THE FINDING. MySQL 8 enables binary logging by default, and with it on,
+# CREATE TRIGGER requires SUPER unless this is set. The ledger is append-only
+# BECAUSE of two triggers created by a migration, and .env.staging.example
+# specifies a least-privilege database user, per PLAN.md section 3.
+#
+# Reproduced on the local 8.4.3 server with a user holding the TRIGGER grant:
+#   ERROR 1419 (HY000): You do not have the SUPER privilege and binary logging
+#   is enabled (you *might* want to use the less safe
+#   log_bin_trust_function_creators variable)
+#
+# Without this line the first `migrate --force` on a real server fails on
+# exactly the migration that makes the ledger immutable. The test suite never
+# caught it because it connects as root, which holds SUPER.
+#
+# The "less safe" in MySQL's message is about replicas trusting that a trigger
+# is deterministic. This build runs no replica, and granting the application
+# user SUPER to avoid it would be far less safe than this.
+log_bin_trust_function_creators = 1
+
+# Binary logs stay on — they are what point-in-time recovery replays between
+# nightly dumps. Seven days of them.
+binlog_expire_logs_seconds = 604800
+
+# ---------------------------------------------------------------------------
+# Correctness.
+# ---------------------------------------------------------------------------
+
+# Strict. Non-strict MySQL silently truncates an out-of-range DECIMAL(18,4) and
+# stores it with a warning nobody reads; PLAN.md section 4's money rule assumes a
+# value that does not fit is an error.
+sql_mode = ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+
+# REPEATABLE-READ, stated rather than left to the default: the gapless document
+# numbering reads a counter row under SELECT ... FOR UPDATE (P0-06), and its
+# locking behaviour is specified against this level.
+transaction_isolation = REPEATABLE-READ
+
+# Matches what BackupService creates a scratch restore target with.
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+
+# No LOAD DATA LOCAL. Already the 8.4 default; stated so a later "tuning" copied
+# from an old blog post cannot quietly switch it back on.
+local_infile = 0
+
+# ---------------------------------------------------------------------------
+# Memory.
+# ---------------------------------------------------------------------------
+
+innodb_buffer_pool_size = 1G
+innodb_redo_log_capacity = 512M
+
+# FPM's 12 workers, the queue workers, the scheduler, and headroom for somebody
+# running artisan by hand during an incident.
+max_connections = 60

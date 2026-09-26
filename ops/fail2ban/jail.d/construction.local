@@ -1,0 +1,36 @@
+# fail2ban — P6-07.
+#
+# Install as /etc/fail2ban/jail.d/construction.local, then
+# `fail2ban-client reload` and `fail2ban-client status sshd` to confirm the jail
+# is live. A `.local` file, so a package upgrade that rewrites jail.conf does not
+# undo it.
+
+[DEFAULT]
+# Never ban the box itself. A locked-out health check reads as an outage.
+ignoreip = 127.0.0.1/8 ::1
+
+# journald, which is where sshd logs on current Ubuntu. The file backend reads
+# /var/log/auth.log, which may not exist, and a jail watching a missing file
+# starts cleanly and bans nobody.
+backend = systemd
+
+findtime = 10m
+maxretry = 5
+bantime = 1h
+
+# Longer each time the same address returns, up to a week. A fixed ban teaches
+# a scanner exactly how long to wait.
+bantime.increment = true
+bantime.maxtime = 1w
+
+[sshd]
+enabled = true
+port = ssh
+maxretry = 3
+
+# Deliberately NO jail for the application login. Filament's sign-in is a
+# Livewire component, so a failed attempt is a POST to /livewire/update — the
+# same URL as every other interaction on every screen. A log-based jail cannot
+# tell a wrong password from somebody paging a table, and would ban users for
+# working. The login is rate-limited inside the application (five a minute),
+# and SSH is where an attacker gets the whole server.

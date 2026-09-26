@@ -1,0 +1,24 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - database
+        - routes
+        - tests
+
+    # Level 5 is the honest starting point for a fresh Laravel app. PHASE-PLAN.md
+    # Phase 6 raises it — app/Domain carries the gates, numbering and posting
+    # rules, so that is the code worth tightening first.
+    level: 5
+
+    # Pest declares its DSL (`it`, `expect`) and pest-plugin-laravel its HTTP
+    # helpers (`get`, `post`, `actingAs`) as global functions loaded via
+    # composer's autoload-files. PHPStan does not read those, so it has to be
+    # told where the symbols live or every test file reports "function not found".
+    scanFiles:
+        - vendor/pestphp/pest/src/Functions.php
+        - vendor/pestphp/pest-plugin-laravel/src/Http.php
+
+    ignoreErrors: []
