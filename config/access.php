@@ -22,6 +22,7 @@ use App\Filament\Resources\Subcontracts\SubcontractsResource;
 use App\Filament\Resources\Users\UsersResource;
 use App\Filament\Resources\VendorAdvances\VendorAdvancesResource;
 use App\Filament\Resources\Vendors\VendorResource;
+use App\Filament\Resources\Warehouses\WarehousesResource;
 use App\Filament\Widgets\BudgetVersusActualChart;
 use App\Filament\Widgets\CashPosition;
 use App\Filament\Widgets\NeedsAttention;
@@ -112,6 +113,10 @@ return [
         // The storekeeper receives against a PO, keeps the stock card and the plant.
         ReceivingReportsResource::class => ['procurement-head', 'project-manager', 'finance-manager', 'storekeeper', 'site-engineer'],
         StockCardsResource::class => ['procurement-head', 'project-manager', 'finance-manager', 'storekeeper'],
+
+        // The facility register. Read by the same people who read stock, and
+        // the screen every other logistics table resolves a warehouse against.
+        WarehousesResource::class => ['procurement-head', 'project-manager', 'finance-manager', 'storekeeper'],
         EquipmentResource::class => ['procurement-head', 'project-manager', 'finance-manager', 'storekeeper'],
         PurchaseOrdersResource::class => ['procurement-head', 'project-manager', 'finance-manager', 'managing-director', 'storekeeper'],
 

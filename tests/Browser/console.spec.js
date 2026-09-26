@@ -515,7 +515,9 @@ test('back-charges list has a clean console', async ({ page }) => {
   await page.waitForLoadState('networkidle');
 
   expect(problems, problems.join('\n')).toEqual([]);
-  await expect(page.getByText('Back-charges').first()).toBeVisible();
+  // The page heading, not the sidebar link: this module is retired from the
+  // navigation (spec §8) and its URL still answers, which is the point.
+  await expect(page.getByText('Back Charges').first()).toBeVisible();
 });
 
 test('warranties list has a clean console', async ({ page }) => {
@@ -575,7 +577,8 @@ test('close-out checklists list has a clean console', async ({ page }) => {
   await page.waitForLoadState('networkidle');
 
   expect(problems, problems.join('\n')).toEqual([]);
-  await expect(page.getByText('Close-out checklists').first()).toBeVisible();
+  // As above: the heading, not the retired sidebar link.
+  await expect(page.getByText('Close Out Checklists').first()).toBeVisible();
 });
 
 test('add employee form has a clean console', async ({ page }) => {
@@ -699,5 +702,14 @@ test('dashboard KPI widgets have a clean console', async ({ page }) => {
 
   // Asserted last, so a chart that throws on render is reported as the console
   // error it is rather than as a missing heading.
+  expect(problems, problems.join('\n')).toEqual([]);
+});
+
+test('warehouse register has a clean console', async ({ page }) => {
+  const problems = watch(page);
+
+  await page.goto('/admin/warehouses');
+  await page.waitForLoadState('networkidle');
+
   expect(problems, problems.join('\n')).toEqual([]);
 });
