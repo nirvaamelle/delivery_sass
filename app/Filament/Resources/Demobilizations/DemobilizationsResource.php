@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Demobilizations;
 
 use App\Filament\Concerns\AuthorizesScreenByRole;
+use App\Filament\Concerns\RetiredModule;
 use App\Filament\Resources\Demobilizations\Pages\ListDemobilizations;
 use App\Filament\Resources\Demobilizations\Tables\DemobilizationsTable;
 use App\Models\Demobilization;
@@ -22,6 +23,7 @@ use UnitEnum;
 class DemobilizationsResource extends Resource
 {
     use AuthorizesScreenByRole;
+    use RetiredModule;
 
     protected static ?string $model = Demobilization::class;
 

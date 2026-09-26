@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Accomplishments;
 
 use App\Filament\Concerns\AuthorizesScreenByRole;
+use App\Filament\Concerns\RetiredModule;
 use App\Filament\Resources\Accomplishments\Pages\ListAccomplishments;
 use App\Filament\Resources\Accomplishments\Tables\AccomplishmentsTable;
 use App\Models\Accomplishment;
@@ -23,6 +24,7 @@ use UnitEnum;
 class AccomplishmentsResource extends Resource
 {
     use AuthorizesScreenByRole;
+    use RetiredModule;
 
     protected static ?string $model = Accomplishment::class;
 

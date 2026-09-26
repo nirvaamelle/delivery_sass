@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\CloseOutChecklists;
 
 use App\Filament\Concerns\AuthorizesScreenByRole;
+use App\Filament\Concerns\RetiredModule;
 use App\Filament\Resources\CloseOutChecklists\Pages\ListCloseOutChecklists;
 use App\Filament\Resources\CloseOutChecklists\Pages\ViewCloseOutChecklist;
 use App\Filament\Resources\CloseOutChecklists\Tables\CloseOutChecklistsTable;
@@ -27,6 +28,7 @@ use UnitEnum;
 class CloseOutChecklistsResource extends Resource
 {
     use AuthorizesScreenByRole;
+    use RetiredModule;
 
     protected static ?string $model = CloseOutChecklist::class;
 

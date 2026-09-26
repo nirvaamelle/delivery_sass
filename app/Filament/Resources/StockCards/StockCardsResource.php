@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\StockCards;
 
 use App\Filament\Concerns\AuthorizesScreenByRole;
+use App\Filament\Concerns\RetiredModule;
 use App\Filament\Resources\StockCards\Pages\ListStockCards;
 use App\Filament\Resources\StockCards\Tables\StockCardsTable;
 use App\Models\StockCard;
@@ -23,6 +24,7 @@ use UnitEnum;
 class StockCardsResource extends Resource
 {
     use AuthorizesScreenByRole;
+    use RetiredModule;
 
     protected static ?string $model = StockCard::class;
 

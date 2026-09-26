@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Punchlists;
 
 use App\Filament\Concerns\AuthorizesScreenByRole;
+use App\Filament\Concerns\RetiredModule;
 use App\Filament\Resources\Punchlists\Pages\ListPunchlists;
 use App\Filament\Resources\Punchlists\Tables\PunchlistsTable;
 use App\Models\Punchlist;
@@ -22,6 +23,7 @@ use UnitEnum;
 class PunchlistsResource extends Resource
 {
     use AuthorizesScreenByRole;
+    use RetiredModule;
 
     protected static ?string $model = Punchlist::class;
 

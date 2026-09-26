@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ThreeWayMatches;
 
 use App\Filament\Concerns\AuthorizesScreenByRole;
+use App\Filament\Concerns\RetiredModule;
 use App\Filament\Resources\ThreeWayMatches\Pages\ListThreeWayMatches;
 use App\Filament\Resources\ThreeWayMatches\Tables\ThreeWayMatchesTable;
 use App\Models\ThreeWayMatch;
@@ -23,6 +24,7 @@ use UnitEnum;
 class ThreeWayMatchesResource extends Resource
 {
     use AuthorizesScreenByRole;
+    use RetiredModule;
 
     protected static ?string $model = ThreeWayMatch::class;
 

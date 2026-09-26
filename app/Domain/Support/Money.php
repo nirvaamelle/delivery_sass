@@ -69,6 +69,34 @@ class Money
     }
 
     /**
+     * Divide two decimal strings, rounded half up to the requested scale.
+     *
+     * Carried at WORKING_SCALE first for the same reason multiply is: the
+     * rounding decision is made once, at the end, on a full-precision quotient
+     * rather than on one that has already lost digits.
+     *
+     * Division arrived with logistics — km/L, lines per hour and pick accuracy
+     * are all divisions, and without this they would be written as floats in
+     * three different services.
+     *
+     * @throws InvalidArgumentException when either value is not a decimal
+     *                                  string, or the divisor is zero
+     */
+    public static function divide(string $a, string $b, int $scale = self::SCALE): string
+    {
+        self::assertDecimal($a);
+        self::assertDecimal($b);
+
+        if (self::isZero($b)) {
+            throw new InvalidArgumentException(
+                'Cannot divide by zero. A trip with no litres, a pick task with no lines and a period with no hours each have no rate — report no figure rather than one the arithmetic invented.'
+            );
+        }
+
+        return self::round(bcdiv($a, $b, self::WORKING_SCALE), $scale);
+    }
+
+    /**
      * Add decimal strings exactly.
      */
     public static function sum(string ...$values): string

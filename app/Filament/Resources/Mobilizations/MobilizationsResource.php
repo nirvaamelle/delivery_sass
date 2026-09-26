@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Mobilizations;
 
 use App\Filament\Concerns\AuthorizesScreenByRole;
+use App\Filament\Concerns\RetiredModule;
 use App\Filament\Resources\Mobilizations\Pages\ListMobilizations;
 use App\Filament\Resources\Mobilizations\Tables\MobilizationsTable;
 use App\Models\Mobilization;
@@ -23,6 +24,7 @@ use UnitEnum;
 class MobilizationsResource extends Resource
 {
     use AuthorizesScreenByRole;
+    use RetiredModule;
 
     protected static ?string $model = Mobilization::class;
 

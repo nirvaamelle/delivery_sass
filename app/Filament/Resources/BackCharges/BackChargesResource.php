@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BackCharges;
 
 use App\Filament\Concerns\AuthorizesScreenByRole;
+use App\Filament\Concerns\RetiredModule;
 use App\Filament\Resources\BackCharges\Pages\ListBackCharges;
 use App\Filament\Resources\BackCharges\Tables\BackChargesTable;
 use App\Models\BackCharge;
@@ -23,6 +24,7 @@ use UnitEnum;
 class BackChargesResource extends Resource
 {
     use AuthorizesScreenByRole;
+    use RetiredModule;
 
     protected static ?string $model = BackCharge::class;
 

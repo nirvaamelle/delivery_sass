@@ -40,7 +40,11 @@ class ProjectsResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'code';
 
-    protected static ?string $navigationLabel = 'Projects';
+    protected static ?string $navigationLabel = 'Client accounts';
+
+    protected static ?string $modelLabel = 'client account';
+
+    protected static ?string $pluralModelLabel = 'client accounts';
 
     protected static string|UnitEnum|null $navigationGroup = 'Setup';
 

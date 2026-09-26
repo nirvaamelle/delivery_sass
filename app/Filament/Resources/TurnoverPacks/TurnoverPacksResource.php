@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\TurnoverPacks;
 
 use App\Filament\Concerns\AuthorizesScreenByRole;
+use App\Filament\Concerns\RetiredModule;
 use App\Filament\Resources\TurnoverPacks\Pages\ListTurnoverPacks;
 use App\Filament\Resources\TurnoverPacks\Tables\TurnoverPacksTable;
 use App\Models\TurnoverPack;
@@ -21,6 +22,7 @@ use UnitEnum;
 class TurnoverPacksResource extends Resource
 {
     use AuthorizesScreenByRole;
+    use RetiredModule;
 
     protected static ?string $model = TurnoverPack::class;
 

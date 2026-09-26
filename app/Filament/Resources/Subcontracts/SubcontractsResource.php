@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Subcontracts;
 
 use App\Filament\Concerns\AuthorizesScreenByRole;
+use App\Filament\Concerns\RetiredModule;
 use App\Filament\Resources\Subcontracts\Pages\ListSubcontracts;
 use App\Filament\Resources\Subcontracts\Tables\SubcontractsTable;
 use App\Models\Subcontract;
@@ -26,6 +27,7 @@ use UnitEnum;
 class SubcontractsResource extends Resource
 {
     use AuthorizesScreenByRole;
+    use RetiredModule;
 
     protected static ?string $model = Subcontract::class;
 
